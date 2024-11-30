@@ -341,6 +341,13 @@ sys_open(void)
     return -1;
   }
 
+  if ((ip->permissions == 0) || ((omode & O_WRONLY) && !(ip->permissions & 2)) || ((omode & O_RDWR) && ip->permissions != 3)) {
+    iunlockput(ip);
+    end_op();
+    return -1;
+  }
+
+
   if((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0){
     if(f)
       fileclose(f);
@@ -502,4 +509,40 @@ sys_pipe(void)
     return -1;
   }
   return 0;
+}
+
+uint64
+sys_chmod(void)
+{
+
+  char path[MAXPATH];
+  int mode;
+  struct inode *ip;
+
+  if (argstr(0, path, MAXPATH) < 0) {
+    return -1;
+  }
+  argint(1, &mode);
+  if (mode < 0 || mode > 5)
+    return -1;
+
+  begin_op();
+  if ((ip = namei(path)) == 0) {
+    end_op();
+    return -1;
+  }
+  ilock(ip);
+
+  if(ip->permissions == 5) {
+    iunlockput(ip);
+    end_op();
+    return -1;
+  }
+  ip->permissions = mode;
+  iupdate(ip);
+  iunlockput(ip);
+  end_op();
+
+  return 0;
+
 }

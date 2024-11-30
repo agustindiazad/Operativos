@@ -37,6 +37,7 @@ void* memset(void*, int, uint);
 int atoi(const char*);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
+int chmod(char *path, int mode);
 
 // umalloc.c
 void* malloc(uint);

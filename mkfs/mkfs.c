@@ -68,6 +68,7 @@ xint(uint x)
 int
 main(int argc, char *argv[])
 {
+  printf("Tamaño: %lu bytes\n", sizeof(struct dinode));
   int i, cc, fd;
   uint rootino, inum, off;
   struct dirent de;
